@@ -27,8 +27,7 @@ const message = [
 "",
 "Mohon info langkah selanjutnya ya. Terima kasih!"
 ].join("\n");
-window.open("https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}", "_blank", "noopener,noreferrer");
-}
+window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
 
 return <main>
 <header className="nav wrap">
