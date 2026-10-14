@@ -61,12 +61,12 @@ export default function AdminLoginPage() {
         }
       );
 
-      if (error) {
-        setErrorMessage(
-          "Email reset belum bisa dikirim. Periksa konfigurasi Supabase."
-        );
-        return;
-      }
+     
+if (error) {
+  setErrorMessage(`Gagal: ${error.message}`);
+  return;
+}
+
 
       setNotice(
         "Jika email terdaftar, instruksi reset password akan dikirim. Periksa inbox dan folder spam."
