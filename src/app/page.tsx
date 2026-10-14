@@ -32,9 +32,6 @@ export default function Home() {
 
   useEffect(() => {
     async function loadProducts() {
-      setLoading(true);
-      setLoadError("");
-
       const { data, error } = await supabase
         .from("products")
         .select("id, name, description, price, image_url, is_active")
@@ -43,9 +40,7 @@ export default function Home() {
 
       if (error) {
         console.error("Gagal memuat produk:", error.message);
-        setLoadError(
-          "Produk belum bisa dimuat. Silakan coba muat ulang halaman."
-        );
+        setLoadError("Produk belum bisa dimuat. Silakan coba lagi.");
         setProducts([]);
       } else {
         const rows = (data ?? []) as DatabaseProduct[];
@@ -93,9 +88,9 @@ export default function Home() {
       "Halo Ayrira, aku mau order!",
       "",
       `Produk: ${product.name}`,
-      `Paket: ${pack.label}`,
-      `Harga produk: ${formatRupiah(product.startingPrice)}`,
-      `Harga paket: ${formatRupiah(pack.price)}`,
+      `Durasi: ${pack.label}`,
+      `Harga produk di katalog: ${formatRupiah(product.startingPrice)}`,
+      `Harga paket yang dipilih: ${formatRupiah(pack.price)}`,
       "",
       "Mohon konfirmasi harga dan ketersediaan paket sebelum pembayaran. Terima kasih!",
     ].join("\n");
@@ -112,9 +107,7 @@ export default function Home() {
       <header className="nav wrap">
         <a className="brand" href="#">
           <span className="brand-mark">A</span>
-          <span>
-            Ayrira<small>PREMIUM DIGITAL STORE</small>
-          </span>
+          <span>Ayrira<small>PREMIUM DIGITAL STORE</small></span>
         </a>
         <nav>
           <a href="#katalog">Katalog</a>
@@ -128,19 +121,13 @@ export default function Home() {
         <div className="hero-copy">
           <span className="eyebrow"><i /> YOUR DIGITAL ESSENTIALS</span>
           <h1>Digital favorites,<br /><em>made simpler.</em></h1>
-          <p>
-            Temukan pilihan produk digital favoritmu dengan proses pemesanan
-            yang praktis dan ramah.
-          </p>
-          <a className="button" href="#katalog">
-            Lihat katalog <span>↗</span>
-          </a>
+          <p>Temukan pilihan produk digital favoritmu dengan proses pemesanan yang praktis dan ramah.</p>
+          <a className="button" href="#katalog">Lihat katalog <span>↗</span></a>
           <div className="trust">
             <span>✓ Pilihan produk terkurasi</span>
             <span>✓ Order praktis via WhatsApp</span>
           </div>
         </div>
-
         <div className="hero-art" aria-label="Ilustrasi kartu produk digital">
           <div className="orb orb-one" />
           <div className="orb orb-two" />
@@ -160,7 +147,7 @@ export default function Home() {
 
       <section className="benefits wrap">
         <div><span>01</span><p><b>Simple catalog</b><small>Temukan produk dengan mudah</small></p></div>
-        <div><span>02</span><p><b>Clear pricing</b><small>Harga produk tersimpan di database</small></p></div>
+        <div><span>02</span><p><b>Clear pricing</b><small>Harga paket ditampilkan jelas</small></p></div>
         <div><span>03</span><p><b>Chat to order</b><small>Lanjutkan pesanan via WhatsApp</small></p></div>
       </section>
 
@@ -200,9 +187,7 @@ export default function Home() {
           {!loading && loadError && (
             <div className="empty">
               <p>{loadError}</p>
-              <button onClick={() => window.location.reload()}>
-                Coba lagi
-              </button>
+              <button onClick={() => window.location.reload()}>Coba lagi</button>
             </div>
           )}
           {!loading && !loadError && filtered.map((product, i) => (
@@ -219,9 +204,7 @@ export default function Home() {
                       borderRadius: "inherit",
                     }}
                   />
-                ) : (
-                  <span>{product.image}</span>
-                )}
+                ) : <span>{product.image}</span>}
               </div>
               <div className="product-meta">
                 <span>{product.category}</span>
@@ -235,25 +218,23 @@ export default function Home() {
                   <strong>{formatRupiah(product.startingPrice)}</strong>
                 </div>
                 <button
+                  className="details"
                   onClick={() => {
                     setSelected(product);
                     setPack({
-                      id: "product-price",
-                      label: "Harga produk",
+                      id: samplePackages[0].id,
+                      label: samplePackages[0].label,
                       price: product.startingPrice,
                     });
                   }}
-                  className="details"
                 >
-                  Lihat detail ↗
+                  Lihat paket ↗
                 </button>
               </div>
             </article>
           ))}
           {!loading && !loadError && filtered.length === 0 && (
-            <div className="empty">
-              Belum ada produk aktif. Coba lagi nanti ya!
-            </div>
+            <div className="empty">Belum ada produk aktif. Coba lagi nanti ya!</div>
           )}
         </div>
       </section>
@@ -275,7 +256,7 @@ export default function Home() {
         <div>
           <span className="eyebrow">READY WHEN YOU ARE</span>
           <h2>Temukan yang kamu butuhkan.</h2>
-          <p>Pilih produk dan lanjutkan melalui WhatsApp.</p>
+          <p>Pilih produk, tentukan paket, dan lanjutkan melalui WhatsApp.</p>
         </div>
         <a className="button light" href="#katalog">Jelajahi katalog ↗</a>
       </section>
@@ -286,17 +267,11 @@ export default function Home() {
           <span>Ayrira<small>PREMIUM DIGITAL STORE</small></span>
         </a>
         <span>© {new Date().getFullYear()} Ayrira. Made for better digital days.</span>
-        <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer">
-          Hubungi kami ↗
-        </a>
+        <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer">Hubungi kami ↗</a>
       </footer>
 
       {selected && (
-        <div
-          className="modal-backdrop"
-          role="presentation"
-          onClick={() => setSelected(null)}
-        >
+        <div className="modal-backdrop" role="presentation" onClick={() => setSelected(null)}>
           <section
             className="modal"
             role="dialog"
@@ -304,14 +279,8 @@ export default function Home() {
             aria-labelledby="modal-title"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              className="close"
-              onClick={() => setSelected(null)}
-              aria-label="Tutup"
-            >
-              ×
-            </button>
-            <span className="eyebrow">DETAIL PRODUK</span>
+            <button className="close" onClick={() => setSelected(null)} aria-label="Tutup">×</button>
+            <span className="eyebrow">PILIH PAKET</span>
             <div className="modal-icon">
               {selected.image_url ? (
                 <img
@@ -328,13 +297,28 @@ export default function Home() {
             </div>
             <h2 id="modal-title">{selected.name}</h2>
             <p>{selected.description}</p>
+
+            <label className="field-label" htmlFor="package">Durasi paket</label>
+            <select
+              id="package"
+              value={pack.id}
+              onChange={(e) =>
+                setPack(samplePackages.find((p) => p.id === e.target.value) || samplePackages[0])
+              }
+            >
+              {samplePackages.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.label} — {formatRupiah(p.price)}
+                </option>
+              ))}
+            </select>
+
             <div className="total">
-              <span>Harga produk</span>
-              <strong>{formatRupiah(selected.startingPrice)}</strong>
+              <span>Total sementara</span>
+              <strong>{formatRupiah(pack.price)}</strong>
             </div>
             <p className="disclaimer">
-              Harga diambil dari katalog. Konfirmasikan ketersediaan dan detail
-              produk melalui WhatsApp sebelum melakukan pembayaran.
+              Harga durasi masih berupa contoh. Konfirmasikan harga paket yang berlaku melalui WhatsApp sebelum pembayaran.
             </p>
             <button className="button order-button" onClick={() => order(selected)}>
               Lanjut order via WhatsApp ↗
