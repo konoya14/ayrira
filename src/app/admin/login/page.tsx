@@ -1,15 +1,52 @@
-
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
-    alert("Login Supabase akan dihubungkan pada langkah berikutnya.");
+    setErrorMessage("");
+    setLoading(true);
+
+    try {
+      if (!supabase) {
+        setErrorMessage(
+          "Konfigurasi Supabase belum tersedia. Silakan coba lagi nanti."
+        );
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) {
+        setErrorMessage(
+          "Login gagal. Periksa email dan password kamu."
+        );
+        return;
+      }
+
+      router.replace("/admin/dashboard");
+    } catch {
+      setErrorMessage(
+        "Terjadi kesalahan koneksi. Silakan coba lagi."
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -24,7 +61,10 @@ export default function AdminLoginPage() {
         </div>
 
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium">
+          <label
+            htmlFor="email"
+            className="mb-1 block text-sm font-medium"
+          >
             Email admin
           </label>
           <input
@@ -40,7 +80,10 @@ export default function AdminLoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium">
+          <label
+            htmlFor="password"
+            className="mb-1 block text-sm font-medium"
+          >
             Password
           </label>
           <input
@@ -55,11 +98,18 @@ export default function AdminLoginPage() {
           />
         </div>
 
+        {errorMessage && (
+          <p role="alert" className="text-sm text-red-600">
+            {errorMessage}
+          </p>
+        )}
+
         <button
           type="submit"
-          className="w-full rounded-lg bg-black p-3 font-semibold text-white"
+          disabled={loading}
+          className="w-full rounded-lg bg-black p-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Masuk
+          {loading ? "Memproses..." : "Masuk"}
         </button>
 
         <p className="text-center text-xs text-gray-500">
