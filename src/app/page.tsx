@@ -18,16 +18,21 @@ const filtered = useMemo(() => sampleProducts.filter(p =>
 
 function order(product: Product) {
 const message = [
-"Halo Ayrira, aku mau order!",
-"",
-"Produk: ${product.name}",
-"Paket: ${pack.label}",
-"Harga: ${formatRupiah(pack.price)}",
-"Total: ${formatRupiah(pack.price)}",
-"",
-"Mohon info langkah selanjutnya ya. Terima kasih!"
+  "Halo Ayrira, aku mau order!",
+  "",
+  `Produk: ${product.name}`,
+  `Paket: ${pack.label}`,
+  `Harga: ${formatRupiah(pack.price)}`,
+  `Total: ${formatRupiah(pack.price)}`,
+  "",
+  "Mohon info langkah selanjutnya ya. Terima kasih!"
 ].join("\n");
-window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+window.open(
+  `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`,
+  "_blank",
+  "noopener,noreferrer"
+);
+}
 
 return <main>
 <header className="nav wrap">
